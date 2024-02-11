@@ -11,25 +11,22 @@ import {
   query,
   serverTimestamp,
 } from "@/config/firebase";
-import type { Note, Comment } from "@/types";
+import type { Post, Comment } from "@/types";
 // import { getYouTubeEmbedUrl, findNoteById, findNoteKeyById } from "@/utils";
 // import useAuthStore from "@/stores/authStore";
 
-export const useNotesStore = defineStore("notes", {
+export const usePostsStore = defineStore("posts", {
   state: () => ({
-    userNotes: {} as Record<string, Note>,
-    allUsersNotes: {} as Record<string, Note>,
+    posts: {} as Record<string, Post>,
   }),
   getters: {
-    getAllUserNotesAsArray: (state) => Object.values(state.userNotes),
-    getAllUsersNotesSortedByTimestamp: (state) => {
-      return Object.values(state.allUsersNotes).sort((a: Note, b: Note) => {
+    getSortedPostsAsArray: (state) =>
+      Object.values(state.posts).sort((a: Post, b: Post) => {
         return b.timeStamp.seconds - a.timeStamp.seconds;
-      });
-    },
+      }),
   },
   actions: {
-    async uploadNote(
+    async uploadPost(
       userName: string,
       title: string,
       content: string,
@@ -57,7 +54,7 @@ export const useNotesStore = defineStore("notes", {
         return "error";
       }
     },
-    async getAllUserNotes() {
+    async getPosts() {
       try {
         const querySnapshot = await getDocs(
           query(
@@ -70,12 +67,12 @@ export const useNotesStore = defineStore("notes", {
             orderBy("timeStamp", "desc")
           )
         );
-        this.userNotes = {};
+        this.posts = {};
         querySnapshot.forEach((doc) => {
-          this.userNotes[doc.id] = doc.data() as Note; // Set the data to the userNotes object
+          this.posts[doc.id] = doc.data() as Post; // Set the data to the userposts object
         });
       } catch (error) {
-        console.error("Error fetching user notes:", error);
+        console.error("Error fetching user posts:", error);
       }
     },
   },

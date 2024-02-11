@@ -1,4 +1,4 @@
-import type { Note } from "@/types";
+import type { Post } from "@/types";
 
 export const getYouTubeEmbedUrl = (url: string) => {
   const youtubeUrlRegex =
@@ -28,21 +28,21 @@ export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const findNoteById = (
   id: string,
-  notesDictionary: Record<string, Note>
-): Note | undefined => {
-  for (const key in notesDictionary) {
-    if (notesDictionary[key].id === id) {
-      return notesDictionary[key];
+  postsDictionary: Record<string, Post>
+): Post | undefined => {
+  for (const key in postsDictionary) {
+    if (postsDictionary[key].id === id) {
+      return postsDictionary[key];
     }
   }
   return undefined;
 };
 export const findNoteKeyById = (
   id: string,
-  notesDictionary: Record<string, Note>
+  postsDictionary: Record<string, Post>
 ): string | undefined => {
-  for (const key in notesDictionary) {
-    if (notesDictionary[key].id === id) {
+  for (const key in postsDictionary) {
+    if (postsDictionary[key].id === id) {
       return key;
     }
   }

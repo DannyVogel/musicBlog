@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@iconify-json/fluent": "^1.1.47",
     "@types/uuid": "^9.0.8",
     "firebase": "^10.8.0",
     "nuxt": "^3.10.1",

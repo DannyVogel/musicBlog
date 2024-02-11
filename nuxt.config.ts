@@ -16,4 +16,7 @@ export default defineNuxtConfig({
       Satisfy: true,
     },
   },
+  ui: {
+    icons: ["fluent"],
+  },
 });
