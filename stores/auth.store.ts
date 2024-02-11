@@ -9,7 +9,7 @@ import {
   db,
 } from "@/config/firebase";
 
-const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore("auth", {
   state: () => ({
     isLoggedIn: false,
     userName: "",
@@ -54,6 +54,9 @@ const useAuthStore = defineStore("auth", {
     async logOut() {
       try {
         await signOut(auth);
+        this.isLoggedIn = false;
+        this.userName = "";
+        this.userUID = "";
         return "success";
       } catch (error: Error | any) {
         console.log(error);
@@ -62,5 +65,3 @@ const useAuthStore = defineStore("auth", {
     },
   },
 });
-
-export default useAuthStore;
