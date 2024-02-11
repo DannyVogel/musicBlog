@@ -29,11 +29,28 @@ async function onSubmit(event: FormSubmitEvent<any>) {
       class="space-y-4"
       @submit="onSubmit"
     >
-      <UFormGroup label="Email" name="email">
-        <UInput v-model="state.email" color="blue" />
+      <UFormGroup
+        label="Email"
+        name="email"
+        :ui="{ label: { base: 'text-black dark:text-black' } }"
+      >
+        <UInput
+          v-model="state.email"
+          color="blue"
+          :ui="{ variant: { outline: 'text-black dark:text-black' } }"
+        />
       </UFormGroup>
-      <UFormGroup label="Password" name="password">
-        <UInput v-model="state.password" type="password" color="blue" />
+      <UFormGroup
+        label="Password"
+        name="password"
+        :ui="{ label: { base: 'text-black dark:text-black' } }"
+      >
+        <UInput
+          v-model="state.password"
+          type="password"
+          color="blue"
+          :ui="{ variant: { outline: 'text-black dark:text-black' } }"
+        />
       </UFormGroup>
       <UButton type="submit" color="blue" variant="outline"> Submit </UButton>
     </UForm>
