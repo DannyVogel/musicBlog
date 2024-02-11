@@ -7,7 +7,6 @@ const posts = ref();
 onMounted(async () => {
   await postsStore.getPosts();
   getposts();
-  console.log(postsStore.posts);
   isLoading.value = false;
 });
 

@@ -16,9 +16,7 @@ const validate = (state: any): FormError[] => {
 };
 
 async function onSubmit(event: FormSubmitEvent<any>) {
-  // Do something with data
   await authStore.signIn(event.data.email, event.data.password);
-  console.log(event.data);
 }
 </script>
 
