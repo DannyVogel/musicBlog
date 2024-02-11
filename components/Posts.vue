@@ -16,6 +16,10 @@ const getposts = async () => {
     return b.timeStamp.seconds - a.timeStamp.seconds;
   });
 };
+
+const likePost = (postId: string) => {
+  postsStore.likePostById(postId);
+};
 </script>
 
 <template>
@@ -32,7 +36,11 @@ const getposts = async () => {
           {{ post.title }}
         </h1>
         <div class="hidden sm:flex gap-1 items-center">
-          <UIcon name="i-fluent-heart-16-filled" class="bg-cyan-700" />
+          <UIcon
+            name="i-fluent-heart-16-filled"
+            class="bg-cyan-700 cursor-pointer"
+            @click="likePost(post.id)"
+          />
           <p class="text-slate-400">{{ post.likedBy?.length }}</p>
           <UIcon name="i-fluent-heart-broken-16-regular" class="bg-cyan-700" />
           <p class="text-slate-400">0</p>
@@ -58,5 +66,6 @@ const getposts = async () => {
     <VideoPlayer :id="post.songURL" title="YouTube video player" />
 
     <p v-html="post.content"></p>
+    <Comments :comments="post.comments" :post-id="post.id" />
   </div>
 </template>
