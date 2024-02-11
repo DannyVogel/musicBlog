@@ -24,19 +24,25 @@ const getposts = async () => {
     v-for="post in posts"
     class="flex flex-col gap-3 mt-2 text-black border border-slate-300 p-5 rounded"
   >
-    <div class="flex flex-col flex-nowrap overflow-hidden">
+    <div class="flex flex-col overflow-hidden">
       <div
         class="flex items-baseline justify-between border border-b-slate-300"
       >
-        <h1 class="text-2xl truncate text-cyan-700 font-semibold">
+        <h1 class="text-2xl text-cyan-700 font-semibold sm:truncate">
           {{ post.title }}
         </h1>
-        <div class="flex gap-1 items-center">
+        <div class="hidden sm:flex gap-1 items-center">
           <UIcon name="i-fluent-heart-16-filled" class="bg-cyan-700" />
           <p class="text-slate-400">{{ post.likedBy?.length }}</p>
           <UIcon name="i-fluent-heart-broken-16-regular" class="bg-cyan-700" />
           <p class="text-slate-400">0</p>
         </div>
+      </div>
+      <div class="sm:hidden ml-auto flex gap-1 items-center">
+        <UIcon name="i-fluent-heart-16-filled" class="bg-cyan-700" />
+        <p class="text-slate-400">{{ post.likedBy?.length }}</p>
+        <UIcon name="i-fluent-heart-broken-16-regular" class="bg-cyan-700" />
+        <p class="text-slate-400">0</p>
       </div>
       <p class="pl-0.5 text-sm text-gray-400">
         {{
