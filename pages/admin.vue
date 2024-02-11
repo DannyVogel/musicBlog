@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 const authStore = useAuthStore();
-
 const postsStore = usePostsStore();
+const isLoading = ref(true);
+
 onMounted(async () => {
   await postsStore.getPosts();
+  isLoading.value = false;
 });
 </script>
 
@@ -15,8 +17,12 @@ onMounted(async () => {
         Welcome {{ authStore.userName }}
       </h1>
       <div class="text-black">
-        <p>Total Posts: {{ postsStore.getPostsCount }}</p>
-        <p>Total Likes: {{ postsStore.getTotalLikes }}</p>
+        <p>
+          Total Posts: {{ isLoading ? "Loading..." : postsStore.getPostsCount }}
+        </p>
+        <p>
+          Total Likes: {{ isLoading ? "Loading..." : postsStore.getTotalLikes }}
+        </p>
       </div>
       <PostCreator />
       <AuthLogOut />
