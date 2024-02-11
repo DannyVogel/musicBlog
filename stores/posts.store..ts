@@ -24,6 +24,14 @@ export const usePostsStore = defineStore("posts", {
       Object.values(state.posts).sort((a: Post, b: Post) => {
         return b.timeStamp.seconds - a.timeStamp.seconds;
       }),
+    getPostsCount: (state) => Object.keys(state.posts).length,
+    getTotalLikes: (state) => {
+      let totalLikes = 0;
+      for (const key in state.posts) {
+        totalLikes += state.posts[key].likedBy.length;
+      }
+      return totalLikes;
+    },
   },
   actions: {
     async uploadPost(
@@ -76,4 +84,5 @@ export const usePostsStore = defineStore("posts", {
       }
     },
   },
+  persist: true,
 });
