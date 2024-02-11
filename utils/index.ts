@@ -1,4 +1,5 @@
 import type { Post } from "@/types";
+import { serverTimestamp } from "@/config/firebase";
 
 export const getYouTubeEmbedUrl = (url: string) => {
   const youtubeUrlRegex =
@@ -26,7 +27,7 @@ export const passwordRegex =
 
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export const findNoteById = (
+export const findPostById = (
   id: string,
   postsDictionary: Record<string, Post>
 ): Post | undefined => {
@@ -37,7 +38,7 @@ export const findNoteById = (
   }
   return undefined;
 };
-export const findNoteKeyById = (
+export const findPostKeyById = (
   id: string,
   postsDictionary: Record<string, Post>
 ): string | undefined => {
@@ -49,30 +50,22 @@ export const findNoteKeyById = (
   return undefined;
 };
 
-export function getTimeAgo(date: Date) {
-  // check if timestamp or date object
-  if (!(date instanceof Date)) {
-    date = date.toDate();
-  }
-  const currentDate = new Date();
-  const timeDifference = currentDate.getTime() - date.getTime();
+export const getFormattedDate = (timestamp: any) => {
+  let date;
 
-  // Calculate the time difference in seconds, minutes, hours, days, and years
-  const seconds = Math.floor(timeDifference / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const years = Math.floor(days / 365);
-
-  if (years > 0) {
-    return years === 1 ? "1 year ago" : `${years} years ago`;
-  } else if (days > 0) {
-    return days === 1 ? "1 day ago" : `${days} days ago`;
-  } else if (hours > 0) {
-    return hours === 1 ? "1 hour ago" : `${hours} hours ago`;
-  } else if (minutes > 0) {
-    return minutes === 1 ? "1 min ago" : `${minutes} mins ago`;
+  // Check if the timestamp is a Firebase Timestamp object
+  if (timestamp.seconds) {
+    date = new Date(timestamp.seconds * 1000);
   } else {
-    return seconds === 1 ? "1 sec ago" : `${seconds} secs ago`;
+    // Assume the timestamp is in seconds
+    date = new Date(timestamp);
   }
-}
+
+  return date.toLocaleDateString("en-US", {
+    month: "numeric",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  });
+};
