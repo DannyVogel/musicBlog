@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { Comment } from "~/types";
-import { getFormattedDate } from "~/utils";
 
-const authStore = useAuthStore();
 const postsStore = usePostsStore();
 
 const props = defineProps({
