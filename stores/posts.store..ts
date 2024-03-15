@@ -1,4 +1,3 @@
-import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
 import {
   collection,
@@ -13,8 +12,6 @@ import {
   deleteDoc,
 } from "@/config/firebase";
 import type { Post, Comment } from "@/types";
-import { getYouTubeEmbedUrl, findPostById, findPostKeyById } from "@/utils";
-// import useAuthStore from "@/stores/authStore";
 
 export const usePostsStore = defineStore("posts", {
   state: () => ({
@@ -72,7 +69,6 @@ export const usePostsStore = defineStore("posts", {
       content: string,
       songURL: string
     ) {
-      const authStore = useAuthStore();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
@@ -81,7 +77,7 @@ export const usePostsStore = defineStore("posts", {
         this.posts[key].content = content;
         this.posts[key].songURL = getYouTubeEmbedUrl(songURL) || post.songURL;
         await updateDoc(
-          doc(db, "users", authStore.userUID, "userNotes", key),
+          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
           this.posts[key]
         );
         return "success";
@@ -91,12 +87,13 @@ export const usePostsStore = defineStore("posts", {
       }
     },
     async deletePostById(postId: string) {
-      const authStore = useAuthStore();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
       try {
-        await deleteDoc(doc(db, "users", authStore.userUID, "userNotes", key));
+        await deleteDoc(
+          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key)
+        );
         return "success";
       } catch (error) {
         console.error("Error deleting document: ", error);
@@ -118,38 +115,48 @@ export const usePostsStore = defineStore("posts", {
         );
         this.posts = {};
         querySnapshot.forEach((doc) => {
-          this.posts[doc.id] = doc.data() as Post; // Set the data to the posts object
+          this.posts[doc.id] = doc.data() as Post;
         });
       } catch (error) {
         console.error("Error fetching user posts:", error);
       }
     },
     async likePostById(postId: string) {
-      const authStore = useAuthStore();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
       try {
         this.posts[key].likedBy?.push(uuidv4());
-        // Update the post in the database
         await updateDoc(
-          doc(db, "users", authStore.userUID, "userNotes", key),
+          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
           this.posts[key]
         );
       } catch (error) {
         console.error("Error adding like to post:", error);
       }
     },
+    async dislikePostById(postId: string) {
+      const post = findPostById(postId, this.posts);
+      const key = findPostKeyById(postId, this.posts);
+      if (!post || !key) return console.error("post not found");
+      try {
+        this.posts[key].dislikedBy?.push(uuidv4());
+        await updateDoc(
+          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
+          this.posts[key]
+        );
+      } catch (error) {
+        console.error("Error removing like from post:", error);
+      }
+    },
     async addComment(postId: string, comment: Comment) {
-      const authStore = useAuthStore();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
       try {
         this.posts[key].comments?.push(comment);
-        // Update the post in the database
         await updateDoc(
-          doc(db, "users", authStore.userUID, "userNotes", key),
+          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
           this.posts[key]
         );
       } catch (error) {
