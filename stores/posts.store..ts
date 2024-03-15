@@ -10,6 +10,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  deleteDoc,
 } from "@/config/firebase";
 import type { Post, Comment } from "@/types";
 import { getYouTubeEmbedUrl, findPostById, findPostKeyById } from "@/utils";
@@ -20,6 +21,9 @@ export const usePostsStore = defineStore("posts", {
     posts: {} as Record<string, Post>,
   }),
   getters: {
+    getPostById: (state) => (id: string) => {
+      return Object.values(state.posts).find((post) => post.id === id);
+    },
     getSortedPostsAsArray: (state) =>
       Object.values(state.posts).sort((a: Post, b: Post) => {
         return b.timeStamp.seconds - a.timeStamp.seconds;
@@ -59,6 +63,43 @@ export const usePostsStore = defineStore("posts", {
         return "success";
       } catch (error) {
         console.error("Error writing document: ", error);
+        return "error";
+      }
+    },
+    async editPost(
+      postId: string,
+      title: string,
+      content: string,
+      songURL: string
+    ) {
+      const authStore = useAuthStore();
+      const post = findPostById(postId, this.posts);
+      const key = findPostKeyById(postId, this.posts);
+      if (!post || !key) return console.error("post not found");
+      try {
+        this.posts[key].title = title;
+        this.posts[key].content = content;
+        this.posts[key].songURL = getYouTubeEmbedUrl(songURL) || post.songURL;
+        await updateDoc(
+          doc(db, "users", authStore.userUID, "userNotes", key),
+          this.posts[key]
+        );
+        return "success";
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        return "error";
+      }
+    },
+    async deletePostById(postId: string) {
+      const authStore = useAuthStore();
+      const post = findPostById(postId, this.posts);
+      const key = findPostKeyById(postId, this.posts);
+      if (!post || !key) return console.error("post not found");
+      try {
+        await deleteDoc(doc(db, "users", authStore.userUID, "userNotes", key));
+        return "success";
+      } catch (error) {
+        console.error("Error deleting document: ", error);
         return "error";
       }
     },
