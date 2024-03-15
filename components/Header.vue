@@ -2,12 +2,13 @@
 
 <template>
   <div
-    class="flex justify-center items-start h-40 border border-slate-300 p-5 rounded"
+    class="flex justify-center items-center max-h-[201px] border border-slate-300 rounded"
   >
     <NuxtLink to="/">
-      <h1 class="font-satisfy italic text-[72px] text-center text-cyan-700">
+      <img src="~/assets/img/logo.png" alt="musigh" class="w-auto h-auto" />
+      <!-- <h1 class="font-satisfy italic text-[72px] text-center text-cyan-700">
         musigh
-      </h1>
+      </h1> -->
     </NuxtLink>
   </div>
 </template>
