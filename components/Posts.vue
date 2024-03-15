@@ -51,21 +51,37 @@ onMounted(async () => {
           {{ post.title }}
         </NuxtLink>
         <div class="hidden sm:flex gap-1 items-center">
-          <UIcon
-            name="i-fluent-heart-16-filled"
-            class="bg-cyan-700 cursor-pointer"
+          <img
+            src="~/assets/icons/fullheart.png"
+            alt="like"
+            class="w-4 h-4 cursor-pointer"
             @click="postsStore.likePostById(post.id)"
           />
           <p class="text-slate-400">{{ post.likedBy?.length }}</p>
-          <UIcon name="i-fluent-heart-broken-16-regular" class="bg-cyan-700" />
-          <p class="text-slate-400">0</p>
+          <img
+            src="~/assets/icons/brokenheart.png"
+            alt="like"
+            class="w-4 h-4 cursor-pointer"
+            @click="postsStore.dislikePostById(post.id)"
+          />
+          <p class="text-slate-400">{{ post.dislikedBy?.length }}</p>
         </div>
       </div>
       <div class="sm:hidden ml-auto flex gap-1 items-center">
-        <UIcon name="i-fluent-heart-16-filled" class="bg-cyan-700" />
+        <img
+          src="~/assets/icons/fullheart.png"
+          alt="like"
+          class="w-4 h-4 cursor-pointer"
+          @click="postsStore.likePostById(post.id)"
+        />
         <p class="text-slate-400">{{ post.likedBy?.length }}</p>
-        <UIcon name="i-fluent-heart-broken-16-regular" class="bg-cyan-700" />
-        <p class="text-slate-400">0</p>
+        <img
+          src="~/assets/icons/brokenheart.png"
+          alt="like"
+          class="w-4 h-4 cursor-pointer"
+          @click="postsStore.dislikePostById(post.id)"
+        />
+        <p class="text-slate-400">{{ post.dislikedBy?.length }}</p>
       </div>
       <p class="pl-0.5 text-sm text-gray-400">
         {{
