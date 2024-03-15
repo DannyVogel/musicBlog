@@ -4,11 +4,6 @@ import type { Post } from "@/types";
 const postsStore = usePostsStore();
 const isLoading = ref(true);
 const posts = ref();
-onMounted(async () => {
-  await postsStore.getPosts();
-  getposts();
-  isLoading.value = false;
-});
 
 const getposts = async () => {
   posts.value = Object.values(postsStore.posts).sort((a: Post, b: Post) => {
@@ -16,9 +11,24 @@ const getposts = async () => {
   });
 };
 
-const likePost = (postId: string) => {
-  postsStore.likePostById(postId);
-};
+const title = ref("");
+function toCamelCase(str: string) {
+  return str
+    .replace(/\s(.)/g, function ($1) {
+      return $1.toLowerCase();
+    })
+    .replace(/\s/g, "")
+    .replace(/^(.)/, function ($1) {
+      return $1.toLowerCase();
+    });
+}
+
+onMounted(async () => {
+  await postsStore.getPosts();
+  getposts();
+  title.value = posts.value[5].title;
+  isLoading.value = false;
+});
 </script>
 
 <template>
@@ -27,18 +37,24 @@ const likePost = (postId: string) => {
     v-for="post in posts"
     class="flex flex-col gap-3 mt-2 text-black border border-slate-300 p-5 rounded"
   >
-    <div class="flex flex-col overflow-hidden">
+    <section
+      :id="toCamelCase(post.title)"
+      class="flex flex-col overflow-hidden"
+    >
       <div
         class="flex items-baseline justify-between border border-b-slate-300"
       >
-        <h1 class="text-2xl text-cyan-700 font-semibold sm:truncate">
+        <NuxtLink
+          :to="'/posts/' + post.id"
+          class="text-2xl text-cyan-700 font-semibold sm:truncate"
+        >
           {{ post.title }}
-        </h1>
+        </NuxtLink>
         <div class="hidden sm:flex gap-1 items-center">
           <UIcon
             name="i-fluent-heart-16-filled"
             class="bg-cyan-700 cursor-pointer"
-            @click="likePost(post.id)"
+            @click="postsStore.likePostById(post.id)"
           />
           <p class="text-slate-400">{{ post.likedBy?.length }}</p>
           <UIcon name="i-fluent-heart-broken-16-regular" class="bg-cyan-700" />
@@ -61,7 +77,7 @@ const likePost = (postId: string) => {
         }}
         - {{ post.author }}
       </p>
-    </div>
+    </section>
     <VideoPlayer :id="post.songURL" title="YouTube video player" />
 
     <p v-html="post.content"></p>
