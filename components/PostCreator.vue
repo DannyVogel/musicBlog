@@ -2,7 +2,7 @@
 import YouTubeVideoId from "youtube-video-id";
 
 const authStore = useAuthStore();
-const PostsStore = usePostsStore();
+const postsStore = usePostsStore();
 const post = ref({
   title: "",
   content: "",
@@ -42,7 +42,7 @@ const submitPost = async () => {
     errorMessage.value = "Please enter some content.";
     return;
   }
-  const res = await PostsStore.uploadPost(
+  const res = await postsStore.uploadPost(
     authStore.userName,
     post.value.title,
     post.value.content,
