@@ -6,6 +6,7 @@ export interface Post {
   content: string;
   songURL: string;
   likedBy: string[];
+  dislikedBy: string[];
   comments: Comment[];
   [key: string]: any;
 }
