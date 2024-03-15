@@ -5,6 +5,9 @@ export default {
       fontFamily: {
         satisfy: ["Satisfy", "cursive"],
       },
+      backgroundImage: (theme) => ({
+        pattern: "url('/download.png')",
+      }),
     },
   },
   extend: {
