@@ -42,6 +42,7 @@ export const usePostsStore = defineStore("posts", {
       songURL: string,
       userUID: string,
       likedBy?: string[],
+      dislikedBy?: string[],
       comments?: object[]
     ) {
       const id = uuidv4();
