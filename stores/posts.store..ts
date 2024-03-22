@@ -16,6 +16,7 @@ import type { Post, Comment } from "@/types";
 export const usePostsStore = defineStore("posts", {
   state: () => ({
     posts: {} as Record<string, Post>,
+    isLoading: false,
   }),
   getters: {
     getPostById: (state) => (id: string) => {
@@ -32,6 +33,20 @@ export const usePostsStore = defineStore("posts", {
         totalLikes += state.posts[key].likedBy.length;
       }
       return totalLikes;
+    },
+    getTotalDislikes: (state) => {
+      let totalDislikes = 0;
+      for (const key in state.posts) {
+        totalDislikes += state.posts[key].dislikedBy.length;
+      }
+      return totalDislikes;
+    },
+    getCommentsCount: (state) => {
+      let totalComments = 0;
+      for (const key in state.posts) {
+        totalComments += state.posts[key].comments.length;
+      }
+      return totalComments;
     },
   },
   actions: {
@@ -102,6 +117,7 @@ export const usePostsStore = defineStore("posts", {
       }
     },
     async getPosts() {
+      this.isLoading = true;
       try {
         const querySnapshot = await getDocs(
           query(
@@ -120,6 +136,8 @@ export const usePostsStore = defineStore("posts", {
         });
       } catch (error) {
         console.error("Error fetching user posts:", error);
+      } finally {
+        this.isLoading = false;
       }
     },
     async likePostById(postId: string) {
