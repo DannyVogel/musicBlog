@@ -2,7 +2,7 @@
 
 <template>
   <div
-    class="flex justify-center items-center max-h-[201px] border border-slate-300 rounded"
+    class="flex justify-center items-center max-h-[201px] border border-slate-300 rounded bg-white bg-opacity-60"
   >
     <NuxtLink to="/">
       <img src="~/assets/img/logo.png" alt="musigh" class="w-auto h-auto" />

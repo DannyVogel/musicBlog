@@ -35,7 +35,7 @@ onMounted(async () => {
   <div
     v-if="!isLoading"
     v-for="post in posts"
-    class="flex flex-col gap-3 mt-2 text-black border border-slate-300 p-5 rounded"
+    class="flex flex-col gap-3 mt-2 text-black border border-slate-300 p-5 rounded bg-white bg-opacity-60"
   >
     <section
       :id="toCamelCase(post.title)"
