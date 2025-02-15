@@ -1,16 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import {
-  collection,
-  db,
-  doc,
-  getDocs,
-  addDoc,
-  updateDoc,
-  orderBy,
-  query,
-  serverTimestamp,
-  deleteDoc,
-} from "@/config/firebase";
 import type { Post, Comment } from "@/types";
 
 export const usePostsStore = defineStore("posts", {
@@ -30,21 +18,21 @@ export const usePostsStore = defineStore("posts", {
     getTotalLikes: (state) => {
       let totalLikes = 0;
       for (const key in state.posts) {
-        totalLikes += state.posts[key].likedBy.length;
+        totalLikes += (state.posts[key].likedBy || []).length;
       }
       return totalLikes;
     },
     getTotalDislikes: (state) => {
       let totalDislikes = 0;
-      for (const key in state.posts) {
-        totalDislikes += state.posts[key].dislikedBy.length;
-      }
+      // for (const key in state.posts) {
+      //   totalDislikes += (state.posts[key].dislikedBy || []).length;
+      // }
       return totalDislikes;
     },
     getCommentsCount: (state) => {
       let totalComments = 0;
       for (const key in state.posts) {
-        totalComments += state.posts[key].comments.length;
+        totalComments += (state.posts[key].comments || []).length;
       }
       return totalComments;
     },
@@ -60,11 +48,12 @@ export const usePostsStore = defineStore("posts", {
       dislikedBy?: string[],
       comments?: object[]
     ) {
+      const { $firebase } = useNuxtApp();
       const id = uuidv4();
       const docData = {
         id: id,
         author: userName,
-        timeStamp: serverTimestamp(),
+        timeStamp: $firebase.serverTimestamp(),
         title: title,
         content: content,
         songURL: songURL,
@@ -72,7 +61,10 @@ export const usePostsStore = defineStore("posts", {
         comments: [],
       };
       try {
-        await addDoc(collection(db, "users", userUID, "userNotes"), docData);
+        await $firebase.addDoc(
+          $firebase.collection($firebase.db, "users", userUID, "userNotes"),
+          docData
+        );
         return "success";
       } catch (error) {
         console.error("Error writing document: ", error);
@@ -85,6 +77,7 @@ export const usePostsStore = defineStore("posts", {
       content: string,
       songURL: string
     ) {
+      const { $firebase } = useNuxtApp();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
@@ -92,8 +85,14 @@ export const usePostsStore = defineStore("posts", {
         this.posts[key].title = title;
         this.posts[key].content = content;
         this.posts[key].songURL = getYouTubeEmbedUrl(songURL) || post.songURL;
-        await updateDoc(
-          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
+        await $firebase.updateDoc(
+          $firebase.doc(
+            $firebase.db,
+            "users",
+            "SLshmJdXrvfTyACar6MGhWLetjX2",
+            "userNotes",
+            key
+          ),
           this.posts[key]
         );
         return "success";
@@ -103,12 +102,19 @@ export const usePostsStore = defineStore("posts", {
       }
     },
     async deletePostById(postId: string) {
+      const { $firebase } = useNuxtApp();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
       try {
-        await deleteDoc(
-          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key)
+        await $firebase.deleteDoc(
+          $firebase.doc(
+            $firebase.db,
+            "users",
+            "SLshmJdXrvfTyACar6MGhWLetjX2",
+            "userNotes",
+            key
+          )
         );
         return "success";
       } catch (error) {
@@ -117,22 +123,29 @@ export const usePostsStore = defineStore("posts", {
       }
     },
     async getPosts() {
+      const { $firebase } = useNuxtApp();
       this.isLoading = true;
       try {
-        const querySnapshot = await getDocs(
-          query(
-            collection(
-              db,
+        const querySnapshot = await $firebase.getDocs(
+          $firebase.query(
+            $firebase.collection(
+              $firebase.db,
               "users",
               "SLshmJdXrvfTyACar6MGhWLetjX2",
               "userNotes"
             ),
-            orderBy("timeStamp", "desc")
+            $firebase.orderBy("timeStamp", "desc")
           )
         );
         this.posts = {};
         querySnapshot.forEach((doc) => {
-          this.posts[doc.id] = doc.data() as Post;
+          const postData = doc.data() as Post;
+          this.posts[doc.id] = {
+            ...postData,
+            likedBy: postData.likedBy || [],
+            dislikedBy: postData.dislikedBy || [],
+            comments: postData.comments || [],
+          };
         });
       } catch (error) {
         console.error("Error fetching user posts:", error);
@@ -141,13 +154,20 @@ export const usePostsStore = defineStore("posts", {
       }
     },
     async likePostById(postId: string) {
+      const { $firebase } = useNuxtApp();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
       try {
         this.posts[key].likedBy?.push(uuidv4());
-        await updateDoc(
-          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
+        await $firebase.updateDoc(
+          $firebase.doc(
+            $firebase.db,
+            "users",
+            "SLshmJdXrvfTyACar6MGhWLetjX2",
+            "userNotes",
+            key
+          ),
           this.posts[key]
         );
       } catch (error) {
@@ -155,13 +175,20 @@ export const usePostsStore = defineStore("posts", {
       }
     },
     async dislikePostById(postId: string) {
+      const { $firebase } = useNuxtApp();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
       try {
         this.posts[key].dislikedBy?.push(uuidv4());
-        await updateDoc(
-          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
+        await $firebase.updateDoc(
+          $firebase.doc(
+            $firebase.db,
+            "users",
+            "SLshmJdXrvfTyACar6MGhWLetjX2",
+            "userNotes",
+            key
+          ),
           this.posts[key]
         );
       } catch (error) {
@@ -169,13 +196,20 @@ export const usePostsStore = defineStore("posts", {
       }
     },
     async addComment(postId: string, comment: Comment) {
+      const { $firebase } = useNuxtApp();
       const post = findPostById(postId, this.posts);
       const key = findPostKeyById(postId, this.posts);
       if (!post || !key) return console.error("post not found");
       try {
         this.posts[key].comments?.push(comment);
-        await updateDoc(
-          doc(db, "users", "SLshmJdXrvfTyACar6MGhWLetjX2", "userNotes", key),
+        await $firebase.updateDoc(
+          $firebase.doc(
+            $firebase.db,
+            "users",
+            "SLshmJdXrvfTyACar6MGhWLetjX2",
+            "userNotes",
+            key
+          ),
           this.posts[key]
         );
       } catch (error) {
