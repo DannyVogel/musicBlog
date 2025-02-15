@@ -1,13 +1,3 @@
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  auth,
-  signOut,
-  getDoc,
-  doc,
-  db,
-} from "@/config/firebase";
-
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isLoggedIn: false,
@@ -17,15 +7,19 @@ export const useAuthStore = defineStore("auth", {
   getters: {},
   actions: {
     init() {
-      onAuthStateChanged(auth, (user) => {
+      const { $firebase } = useNuxtApp();
+
+      $firebase.onAuthStateChanged($firebase.auth, (user) => {
         if (user) {
-          getDoc(doc(db, "users", user.uid)).then((doc) => {
-            if (doc.exists()) {
-              this.userName = user.displayName ?? "";
-              this.isLoggedIn = true;
-              this.userUID = user.uid;
-            }
-          });
+          $firebase
+            .getDoc($firebase.doc($firebase.db, "users", user.uid))
+            .then((doc) => {
+              if (doc.exists()) {
+                this.userName = user.displayName ?? "";
+                this.isLoggedIn = true;
+                this.userUID = user.uid;
+              }
+            });
         } else {
           // User is signed out
           this.isLoggedIn = false;
@@ -35,15 +29,23 @@ export const useAuthStore = defineStore("auth", {
       });
     },
     async signIn(email: string, password: string) {
+      const { $firebase } = useNuxtApp();
+
       try {
-        const data = await signInWithEmailAndPassword(auth, email, password);
-        getDoc(doc(db, "users", data.user.uid)).then((doc) => {
-          if (doc.exists()) {
-            this.isLoggedIn = true;
-            this.userName = doc.data().userName;
-            this.userUID = doc.data().userUID;
-          }
-        });
+        const data = await $firebase.signInWithEmailAndPassword(
+          $firebase.auth,
+          email,
+          password
+        );
+        $firebase
+          .getDoc($firebase.doc($firebase.db, "users", data.user.uid))
+          .then((doc) => {
+            if (doc.exists()) {
+              this.isLoggedIn = true;
+              this.userName = doc.data().userName;
+              this.userUID = doc.data().userUID;
+            }
+          });
         return "success";
       } catch (error: any) {
         console.log(error.code, error.message);
@@ -51,8 +53,10 @@ export const useAuthStore = defineStore("auth", {
       }
     },
     async logOut() {
+      const { $firebase } = useNuxtApp();
+
       try {
-        await signOut(auth);
+        await $firebase.signOut($firebase.auth);
         this.isLoggedIn = false;
         this.userName = "";
         this.userUID = "";

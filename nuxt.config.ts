@@ -19,4 +19,17 @@ export default defineNuxtConfig({
   ui: {
     icons: ["fluent"],
   },
+  runtimeConfig: {
+    public: {
+      apiKey: "",
+      authDomain: "",
+      projectId: "",
+      storageBucket: "",
+      messagingSenderId: "",
+      appId: "",
+    },
+  },
+  typescript: {
+    strict: true,
+  },
 });
